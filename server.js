@@ -18,7 +18,10 @@ console.log("Iniciando o script do servidor...");
 
 // 3. Middlewares (configurações do Express)
 app.use(express.json()); // Para o servidor entender dados em formato JSON
-app.use(express.static(path.join(__dirname, "public"))); // Para servir os arquivos estáticos (HTML, CSS, JS) da pasta 'public'
+
+// ✅ ALTERAÇÃO: Servir arquivos estáticos (HTML) da pasta raiz.
+app.use(express.static(__dirname)); 
+app.use('/assets', express.static(path.join(__dirname, 'public/assets'))); // Servir a pasta de assets corretamente
 
 // 4. Conectar ao banco de dados e iniciar o servidor
 try {
@@ -38,7 +41,8 @@ try {
 
   // Rota para a página inicial
   app.get('/', (req, res) => {
-    res.redirect('/index.html');
+    // Agora envia o arquivo diretamente da raiz
+    res.sendFile(path.join(__dirname, 'index.html'));
   });
 
   // 5. API Endpoints (as "rotas" da nossa aplicação)
