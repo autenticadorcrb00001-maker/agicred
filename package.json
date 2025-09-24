@@ -1,0 +1,15 @@
+{
+  "name": "roleta-premios",
+  "version": "1.0.0",
+  "description": "Aplicação de roleta de prêmios com painel de controle.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^11.1.2",
+    "express": "^4.19.2"
+  }
+}
