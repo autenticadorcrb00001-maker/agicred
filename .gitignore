@@ -1,0 +1,9 @@
+# Arquivos de Log
+logs
+*.log
+
+# Pasta de dependências do Node.js
+/node_modules
+
+# Arquivo do banco de dados SQLite
+*.db
