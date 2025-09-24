@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Controle - Roleta Shopee</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #f04d2e 0%, #ff6b47 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      opacity: 0.3;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .tabs {
+      display: flex;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      overflow-x: auto;
+    }
+    
+    .tab {
+      padding: 20px 30px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #6c757d;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      position: relative;
+    }
+    
+    .tab:hover {
+      background: #e9ecef;
+      color: #495057;
+    }
+    
+    .tab.active {
+      color: #f04d2e;
+      background: white;
+    }
+    
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #f04d2e, #ff6b47);
+    }
+    
+    .tab-content {
+      display: none;
+      padding: 30px;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+    
+    .config-card {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      border-left: 5px solid #f04d2e;
+      transition: all 0.3s ease;
+    }
+    
+    .config-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .config-card h3 {
+      color: #f04d2e;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    
+    .field {
+      margin-bottom: 20px;
+    }
+    
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: #f04d2e;
+      box-shadow: 0 0 0 3px rgba(240, 77, 46, 0.1);
+    }
+    
+    .field input[type="color"] {
+      height: 50px;
+      cursor: pointer;
+    }
+    
+    .field input[type="file"] {
+      border: 2px dashed #e9ecef;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .field input[type="file"]:hover {
+      border-color: #f04d2e;
+      background: rgba(240, 77, 46, 0.05);
+    }
+    
+    .image-preview {
+      margin-top: 15px;
+      text-align: center;
+    }
+    
+    .image-preview img {
+      max-width: 120px;
+      max-height: 120px;
+      border-radius: 10px;
+      border: 3px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+    
+    .image-preview img:hover {
+      transform: scale(1.05);
+      border-color: #f04d2e;
+    }
+    
+    .color-preview {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 10px;
+      border: 3px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      vertical-align: middle;
+    }
+    
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #dc3545, #e74c3c);
+      color: white;
+      box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #17a2b8, #3498db);
+      color: white;
+      box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+    }
+    
+    .btn-info:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(23, 162, 184, 0.4);
+    }
+    
+    .alert {
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      font-weight: 500;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .alert-success {
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      color: #155724;
+      border-left: 5px solid #28a745;
+    }
+    
+    .alert-error {
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+      color: #721c24;
+      border-left: 5px solid #dc3545;
+    }
+    
+    .preview-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+    
+    .preview-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 90%;
+      max-height: 90%;
+      overflow: auto;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    .close-preview {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    .formatacao-info {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .formatacao-info h4 {
+      color: #1976d2;
+      margin-bottom: 8px;
+    }
+    
+    .formatacao-exemplos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .exemplo-item {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      border: 1px solid #bbdefb;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        border-radius: 15px;
+      }
+      
+      .header {
+        padding: 20px;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .tabs {
+        flex-direction: column;
+      }
+      
+      .tab {
+        padding: 15px 20px;
+      }
+      
+      .tab-content {
+        padding: 20px;
+      }
+      
+      .config-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .formatacao-exemplos {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎯 Painel de Controle</h1>
+      <p>Configure sua Roleta Shopee com facilidade</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="textos">📝 Textos</button>
+      <button class="tab" data-tab="cores">🎨 Cores</button>
+      <button class="tab" data-tab="imagens">🖼️ Imagens</button>
+      <button class="tab" data-tab="avancado">⚙️ Avançado</button>
+      <button class="tab" data-tab="estatisticas">📊 Estatísticas</button>
+    </div>
+
+    <!-- Aba Textos -->
+    <div class="tab-content active" id="textos">
+      <div class="formatacao-info">
+        <h4>💡 Dica: Use formatação WhatsApp nos textos!</h4>
+        <p>Formate seus textos usando estas marcações:</p>
+        <div class="formatacao-exemplos">
+          <div class="exemplo-item"><strong>**negrito**</strong> → <strong>negrito</strong></div>
+          <div class="exemplo-item"><em>*itálico*</em> → <em>itálico</em></div>
+          <div class="exemplo-item"><code>##grande##</code> → <span style="font-size: 28px; font-weight: 700;">grande</span></div>
+          <div class="exemplo-item"><code>###gigante###</code> → <span style="font-size: 36px; font-weight: 800;">gigante</span></div>
+          <div class="exemplo-item"><code style="color: #ff0000;">@@vermelho@@</code> → <span style="color: #ff0000;">vermelho</span></div>
+          <div class="exemplo-item"><code style="color: #0066cc;">$$azul$$</code> → <span style="color: #0066cc;">azul</span></div>
+        </div>
+      </div>
+      
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Textos Principais</h3>
+          <div class="field">
+            <label for="textoBotaoGirar">Texto do Botão Girar</label>
+            <input type="text" id="textoBotaoGirar" placeholder="GIRAR A ROLETA">
+          </div>
+          <div class="field">
+            <label for="textoDescricao">Texto Principal da Roleta</label>
+            <textarea id="textoDescricao" rows="3" placeholder="Mês de prêmios: Roleta premiada Shopee"></textarea>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>Descrições Adicionais</h3>
+          <div class="field">
+            <label for="descricaoAdicional1">Descrição Adicional 1</label>
+            <input type="text" id="descricaoAdicional1" placeholder="Participe da promoção especial">
+          </div>
+          <div class="field">
+            <label for="descricaoAdicional2">Descrição Adicional 2</label>
+            <input type="text" id="descricaoAdicional2" placeholder="Gire a roleta e ganhe descontos incríveis!">
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>Configurações do Popup</h3>
+          <div class="field">
+            <label for="textoTituloPopup">Título do Popup</label>
+            <input type="text" id="textoTituloPopup" placeholder="Parabéns! 🎉">
+          </div>
+          <div class="field">
+            <label for="textoPopup">Texto do Popup</label>
+            <textarea id="textoPopup" rows="4" placeholder="Você ganhou um cupom exclusivo..."></textarea>
+          </div>
+          <div class="field">
+            <label for="textoBotaoWhatsapp">Texto do Botão WhatsApp</label>
+            <input type="text" id="textoBotaoWhatsapp" placeholder="Receber seu Cupom">
+          </div>
+          <div class="field">
+            <label for="numeroWhatsapp">Número do WhatsApp</label>
+            <input type="text" id="numeroWhatsapp" placeholder="5511999999999">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba Cores -->
+    <div class="tab-content" id="cores">
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Cores da Interface</h3>
+          <div class="field">
+            <label for="corFundoTela">Cor de Fundo da Tela <span class="color-preview" id="previewCorFundoTela"></span></label>
+            <input type="color" id="corFundoTela" value="#f04d2e">
+          </div>
+          <div class="field">
+            <label for="corFundoRoleta">Cor de Fundo da Roleta <span class="color-preview" id="previewCorFundoRoleta"></span></label>
+            <input type="color" id="corFundoRoleta" value="#f04d2e">
+          </div>
+          <div class="field">
+            <label for="corBordaRoleta">Cor da Borda da Roleta <span class="color-preview" id="previewCorBordaRoleta"></span></label>
+            <input type="color" id="corBordaRoleta" value="#c73c23">
+          </div>
+          <div class="field">
+            <label for="corTexto">Cor do Texto <span class="color-preview" id="previewCorTexto"></span></label>
+            <input type="color" id="corTexto" value="#ffffff">
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>Cores da Roleta</h3>
+          <div class="field">
+            <label for="corFatiaPar">Cor das Fatias Pares <span class="color-preview" id="previewCorFatiaPar"></span></label>
+            <input type="color" id="corFatiaPar" value="#f04d2e">
+          </div>
+          <div class="field">
+            <label for="corFatiaImpar">Cor das Fatias Ímpares <span class="color-preview" id="previewCorFatiaImpar"></span></label>
+            <input type="color" id="corFatiaImpar" value="#ffffff">
+          </div>
+          <div class="field">
+            <label for="corDivisorFatias">Cor dos Divisores <span class="color-preview" id="previewCorDivisorFatias"></span></label>
+            <input type="color" id="corDivisorFatias" value="#ffffff">
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>Cores dos Botões</h3>
+          <div class="field">
+            <label for="corBotaoGirar">Cor do Botão Girar <span class="color-preview" id="previewCorBotaoGirar"></span></label>
+            <input type="color" id="corBotaoGirar" value="#ff6b47">
+          </div>
+          <div class="field">
+            <label for="corFundoPopup">Cor de Fundo do Popup <span class="color-preview" id="previewCorFundoPopup"></span></label>
+            <input type="color" id="corFundoPopup" value="#f04d2e">
+          </div>
+          <div class="field">
+            <label for="corBotaoWhatsapp">Cor do Botão WhatsApp <span class="color-preview" id="previewCorBotaoWhatsapp"></span></label>
+            <input type="color" id="corBotaoWhatsapp" value="#25D366">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba Imagens -->
+    <div class="tab-content" id="imagens">
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Logos da Roleta</h3>
+          <div class="field">
+            <label for="logoSuperior">Logo Superior</label>
+            <input type="file" id="logoSuperior" accept="image/*">
+            <div class="image-preview" id="previewLogoSuperior"></div>
+          </div>
+          <div class="field">
+            <label for="logoCentral">Logo Central</label>
+            <input type="file" id="logoCentral" accept="image/*">
+            <div class="image-preview" id="previewLogoCentral"></div>
+          </div>
+          <div class="field">
+            <label for="seta">Imagem da Seta</label>
+            <input type="file" id="seta" accept="image/*">
+            <div class="image-preview" id="previewSeta"></div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>Prêmios da Roleta</h3>
+          <div class="field">
+            <label for="premio1">Prêmio 1</label>
+            <input type="file" id="premio1" accept="image/*">
+            <div class="image-preview" id="previewPremio1"></div>
+          </div>
+          <div class="field">
+            <label for="premio2">Prêmio 2</label>
+            <input type="file" id="premio2" accept="image/*">
+            <div class="image-preview" id="previewPremio2"></div>
+          </div>
+          <div class="field">
+            <label for="premio3">Prêmio 3</label>
+            <input type="file" id="premio3" accept="image/*">
+            <div class="image-preview" id="previewPremio3"></div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>Mais Prêmios</h3>
+          <div class="field">
+            <label for="premio4">Prêmio 4</label>
+            <input type="file" id="premio4" accept="image/*">
+            <div class="image-preview" id="previewPremio4"></div>
+          </div>
+          <div class="field">
+            <label for="premio5">Prêmio 5</label>
+            <input type="file" id="premio5" accept="image/*">
+            <div class="image-preview" id="previewPremio5"></div>
+          </div>
+          <div class="field">
+            <label for="premio6">Prêmio 6</label>
+            <input type="file" id="premio6" accept="image/*">
+            <div class="image-preview" id="previewPremio6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba Avançado -->
+    <div class="tab-content" id="avancado">
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Configurações Técnicas</h3>
+          <div class="field">
+            <label for="fontePersonalizada">Fonte Personalizada</label>
+            <select id="fontePersonalizada">
+              <option value="Roboto">Roboto</option>
+              <option value="Arial">Arial</option>
+              <option value="Helvetica">Helvetica</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Poppins">Poppins</option>
+              <option value="Lato">Lato</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="premioSorteado">Prêmio Sorteado (0-5)</label>
+            <input type="number" id="premioSorteado" min="0" max="5" value="1">
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>Exportar/Importar</h3>
+          <div class="field">
+            <button class="btn btn-info" id="btnExportar">📤 Exportar Configurações</button>
+          </div>
+          <div class="field">
+            <label for="importarConfig">Importar Configurações</label>
+            <input type="file" id="importarConfig" accept=".json">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba Estatísticas -->
+    <div class="tab-content" id="estatisticas">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalConfigs">0</div>
+          <div class="stat-label">Configurações Salvas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="ultimaAtualizacao">--</div>
+          <div class="stat-label">Última Atualização</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="premioAtual">1</div>
+          <div class="stat-label">Prêmio Configurado</div>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <h3>Histórico de Alterações</h3>
+        <div id="historicoAlteracoes">
+          <p>Nenhuma alteração registrada ainda.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="action-buttons">
+      <button class="btn btn-primary" id="btnSalvar">💾 Salvar Configurações</button>
+      <button class="btn btn-danger" id="btnReset">🔄 Restaurar Padrões</button>
+      <button class="btn btn-info" id="btnPreview">👁️ Visualizar Roleta</button>
+    </div>
+
+    <!-- Mensagens de Feedback -->
+    <div id="mensagem" class="alert"></div>
+  </div>
+
+  <!-- Modal de Preview -->
+  <div class="preview-modal" id="previewModal">
+    <div class="preview-content">
+      <button class="close-preview" id="closePreview">×</button>
+      <iframe id="previewIframe" width="100%" height="600" frameborder="0"></iframe>
+    </div>
+  </div>
+
+  <script>
+    // ========== SISTEMA DE FORMATAÇÃO WHATSAPP ==========
+    // FUNÇÃO PARA FORMATAR TEXTO COMO WHATSAPP
+    function formatarTextoComoWhatsapp(texto) {
+        if (!texto) return '';
+        
+        // Negrito: **texto** ou __texto__
+        texto = texto.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        texto = texto.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        
+        // Itálico: *texto* ou _texto_
+        texto = texto.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        texto = texto.replace(/_(.*?)_/g, '<em>$1</em>');
+        
+        // Tamanho grande: ##texto##
+        texto = texto.replace(/##(.*?)##/g, '<span style="font-size: 28px; font-weight: 700;">$1</span>');
+        
+        // Tamanho gigante: ###texto###
+        texto = texto.replace(/###(.*?)###/g, '<span style="font-size: 36px; font-weight: 800;">$1</span>');
+        
+        // Cor vermelha: @@texto@@
+        texto = texto.replace(/@@(.*?)@@/g, '<span style="color: #ff0000;">$1</span>');
+        
+        // Cor azul: $$texto$$
+        texto = texto.replace(/\$\$(.*?)\$\$/g, '<span style="color: #0066cc;">$1</span>');
+        
+        // Cor verde: %%texto%%
+        texto = texto.replace(/%%(.*?)%%/g, '<span style="color: #009900;">$1</span>');
+        
+        // Cor laranja: &&texto&&
+        texto = texto.replace(/&&(.*?)&&/g, '<span style="color: #ff6600;">$1</span>');
+        
+        return texto;
+    }
+
+    class RoletaAdmin {
+      constructor() {
+        this.configuracoesPadrao = {
+          corFundoTela: '#f04d2e',
+          corFundoRoleta: '#f04d2e',
+          corBordaRoleta: '#c73c23',
+          corBotaoGirar: '#ff6b47',
+          corFatiaPar: '#f04d2e',
+          corFatiaImpar: '#ffffff',
+          corTexto: '#ffffff',
+          textoBotaoGirar: 'GIRAR A ROLETA',
+          textoDescricao: 'Mês de prêmios: Roleta premiada<br>Shopee',
+          numeroWhatsapp: 'SEUNUMERO',
+          premioSorteado: 1,
+          corFundoPopup: '#f04d2e',
+          corBotaoWhatsapp: '#25D366',
+          textoTituloPopup: 'Parabéns! 🎉',
+          textoPopup: 'Você ganhou um <strong>cupom exclusivo de desconto</strong> baseado na sua última compra na Shopee.<br><strong>Exemplo</strong>: se você comprou um produto de <strong>R$1500</strong>, seu cupom será do mesmo valor.',
+          textoBotaoWhatsapp: 'Receber seu Cupom',
+          fontePersonalizada: 'Roboto',
+          corDivisorFatias: '#ffffff',
+          descricaoAdicional1: 'Participe da promoção especial',
+          descricaoAdicional2: 'Gire a roleta e ganhe descontos incríveis!'
+        };
+        
+        this.historico = JSON.parse(localStorage.getItem('historicoRoleta') || '[]');
+        this.init();
+      }
+
+      init() {
+        this.setupTabs();
+        this.setupColorPreviews();
+        this.setupImageUploads();
+        this.setupEventListeners();
+        this.carregarConfiguracoes();
+        this.atualizarEstatisticas();
+      }
+
+      setupTabs() {
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+          });
+        });
+      }
+
+      setupColorPreviews() {
+        const colorInputs = document.querySelectorAll('input[type="color"]');
+        colorInputs.forEach(input => {
+          const preview = document.getElementById('preview' + input.id.charAt(0).toUpperCase() + input.id.slice(1));
+          if (preview) {
+            input.addEventListener('input', () => {
+              preview.style.backgroundColor = input.value;
+            });
+            preview.style.backgroundColor = input.value;
+          }
+        });
+      }
+
+      setupImageUploads() {
+        // ✅ CHAVES CORRETAS PARA COMPATIBILIDADE COM A ROLETA
+        const imageInputs = ['logoSuperior', 'logoCentral', 'seta', 'premio1', 'premio2', 'premio3', 'premio4', 'premio5', 'premio6'];
+        
+        imageInputs.forEach(inputId => {
+          const input = document.getElementById(inputId);
+          const preview = document.getElementById('preview' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
+          
+          input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Preview ${inputId}">`;
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        });
+      }
+
+      setupEventListeners() {
+        document.getElementById('btnSalvar').addEventListener('click', () => this.salvarConfiguracoes());
+        document.getElementById('btnReset').addEventListener('click', () => this.restaurarPadroes());
+        document.getElementById('btnPreview').addEventListener('click', () => this.visualizarRoleta());
+        document.getElementById('btnExportar').addEventListener('click', () => this.exportarConfiguracoes());
+        document.getElementById('importarConfig').addEventListener('change', (e) => this.importarConfiguracoes(e));
+        document.getElementById('closePreview').addEventListener('click', () => this.fecharPreview());
+      }
+
+      carregarConfiguracoes() {
+        const configSalvas = localStorage.getItem('configRoleta');
+        if (configSalvas) {
+          const config = JSON.parse(configSalvas);
+          
+          // Preencher campos de texto e cor
+          Object.keys(config).forEach(key => {
+            const element = document.getElementById(key);
+            if (element && !key.endsWith('Data')) {
+              element.value = config[key];
+            }
+            
+            // Atualizar preview de cores
+            const colorPreview = document.getElementById('preview' + key.charAt(0).toUpperCase() + key.slice(1));
+            if (colorPreview && element && element.type === 'color') {
+              colorPreview.style.backgroundColor = config[key];
+            }
+            
+            // Mostrar imagens salvas
+            if (key.endsWith('Data')) {
+              const baseKey = key.replace('Data', '');
+              const preview = document.getElementById('preview' + baseKey.charAt(0).toUpperCase() + baseKey.slice(1));
+              if (preview) {
+                preview.innerHTML = `<img src="${config[key]}" alt="Preview ${baseKey}">`;
+              }
+            }
+          });
+          
+          this.mostrarMensagem('Configurações carregadas com sucesso!', 'success');
+        } else {
+          this.mostrarMensagem('Usando configurações padrão.', 'success');
+        }
+      }
+
+      async salvarConfiguracoes() {
+        const configuracoes = {};
+        
+        // Coletar dados dos campos
+        const campos = [
+          'textoBotaoGirar', 'textoDescricao', 'descricaoAdicional1', 'descricaoAdicional2',
+          'numeroWhatsapp', 'textoTituloPopup', 'textoPopup', 'textoBotaoWhatsapp',
+          'corFundoTela', 'corFundoRoleta', 'corBordaRoleta', 'corBotaoGirar',
+          'corFatiaPar', 'corFatiaImpar', 'corTexto', 'corFundoPopup',
+          'corBotaoWhatsapp', 'corDivisorFatias', 'fontePersonalizada', 'premioSorteado'
+        ];
+        
+        campos.forEach(campo => {
+          const element = document.getElementById(campo);
+          if (element) {
+            // Aplicar formatação WhatsApp apenas para campos de texto
+            if (campo.includes('texto') || campo.includes('descricao')) {
+              configuracoes[campo] = formatarTextoComoWhatsapp(element.value);
+            } else {
+              configuracoes[campo] = element.value;
+            }
+          }
+        });
+
+        // ✅ PROCESSAR IMAGENS COM CHAVES CORRETAS
+        const imageFields = ['logoSuperior', 'logoCentral', 'seta', 'premio1', 'premio2', 'premio3', 'premio4', 'premio5', 'premio6'];
+        const imagePromises = imageFields.map(field => {
+          return new Promise((resolve) => {
+            const fileInput = document.getElementById(field);
+            if (fileInput.files.length > 0) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                // ✅ SALVAR COM CHAVE CORRETA PARA A ROLETA
+                localStorage.setItem(field, e.target.result);
+                configuracoes[field + 'Data'] = e.target.result;
+                resolve();
+              };
+              reader.readAsDataURL(fileInput.files[0]);
+            } else {
+              resolve();
+            }
+          });
+        });
+
+        await Promise.all(imagePromises);
+
+        // Salvar no localStorage
+        localStorage.setItem('configRoleta', JSON.stringify(configuracoes));
+        
+        // Adicionar ao histórico
+        this.adicionarAoHistorico('Configurações salvas');
+        
+        this.mostrarMensagem('Configurações salvas com sucesso! 🎉', 'success');
+        this.atualizarEstatisticas();
+      }
+
+      restaurarPadroes() {
+        if (confirm('Tem certeza que deseja restaurar as configurações padrão? Esta ação não pode ser desfeita.')) {
+          // Preencher campos com valores padrão
+          Object.keys(this.configuracoesPadrao).forEach(key => {
+            const element = document.getElementById(key);
+            if (element) {
+              element.value = this.configuracoesPadrao[key];
+            }
+          });
+
+          // ✅ LIMPAR IMAGENS DO LOCALSTORAGE
+          const imageFields = ['logoSuperior', 'logoCentral', 'seta', 'premio1', 'premio2', 'premio3', 'premio4', 'premio5', 'premio6'];
+          imageFields.forEach(field => {
+            localStorage.removeItem(field);
+          });
+
+          // Limpar previews de imagens
+          const imagePreviews = document.querySelectorAll('.image-preview');
+          imagePreviews.forEach(preview => {
+            preview.innerHTML = '';
+          });
+
+          // Limpar inputs de arquivo
+          const fileInputs = document.querySelectorAll('input[type="file"]');
+          fileInputs.forEach(input => {
+            input.value = '';
+          });
+
+          // Atualizar previews de cores
+          this.setupColorPreviews();
+
+          // Salvar configurações padrão
+          localStorage.setItem('configRoleta', JSON.stringify(this.configuracoesPadrao));
+          
+          this.adicionarAoHistorico('Configurações restauradas para padrão');
+          this.mostrarMensagem('Configurações padrão restauradas! 🔄', 'success');
+          this.atualizarEstatisticas();
+        }
+      }
+
+      visualizarRoleta() {
+        // Primeiro salvar as configurações atuais
+        this.salvarConfiguracoes().then(() => {
+          const modal = document.getElementById('previewModal');
+          const iframe = document.getElementById('previewIframe');
+          
+          iframe.src = '../uploads/vscodgpt/public/index.html?t=' + Date.now();
+          modal.style.display = 'flex';
+        });
+      }
+
+      fecharPreview() {
+        document.getElementById('previewModal').style.display = 'none';
+      }
+
+      exportarConfiguracoes() {
+        const config = localStorage.getItem('configRoleta');
+        if (config) {
+          const blob = new Blob([config], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `roleta-config-${new Date().toISOString().split('T')[0]}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          
+          this.mostrarMensagem('Configurações exportadas com sucesso! 📤', 'success');
+        } else {
+          this.mostrarMensagem('Nenhuma configuração encontrada para exportar.', 'error');
+        }
+      }
+
+      importarConfiguracoes(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const config = JSON.parse(e.target.result);
+              localStorage.setItem('configRoleta', JSON.stringify(config));
+              this.carregarConfiguracoes();
+              this.adicionarAoHistorico('Configurações importadas');
+              this.mostrarMensagem('Configurações importadas com sucesso! 📥', 'success');
+              this.atualizarEstatisticas();
+            } catch (error) {
+              this.mostrarMensagem('Erro ao importar configurações. Verifique o arquivo.', 'error');
+            }
+          };
+          reader.readAsText(file);
+        }
+      }
+
+      adicionarAoHistorico(acao) {
+        const entrada = {
+          acao,
+          timestamp: new Date().toLocaleString('pt-BR'),
+          id: Date.now()
+        };
+        
+        this.historico.unshift(entrada);
+        if (this.historico.length > 10) {
+          this.historico = this.historico.slice(0, 10);
+        }
+        
+        localStorage.setItem('historicoRoleta', JSON.stringify(this.historico));
+        this.atualizarHistorico();
+      }
+
+      atualizarHistorico() {
+        const container = document.getElementById('historicoAlteracoes');
+        if (this.historico.length === 0) {
+          container.innerHTML = '<p>Nenhuma alteração registrada ainda.</p>';
+        } else {
+          container.innerHTML = this.historico.map(entrada => 
+            `<div style="padding: 10px; border-left: 3px solid #f04d2e; margin-bottom: 10px; background: #f8f9fa;">
+              <strong>${entrada.acao}</strong><br>
+              <small style="color: #6c757d;">${entrada.timestamp}</small>
+            </div>`
+          ).join('');
+        }
+      }
+
+      atualizarEstatisticas() {
+        const config = localStorage.getItem('configRoleta');
+        const totalConfigs = config ? Object.keys(JSON.parse(config)).length : 0;
+        const ultimaAtualizacao = config ? new Date().toLocaleString('pt-BR') : '--';
+        const premioAtual = document.getElementById('premioSorteado').value || '1';
+
+        document.getElementById('totalConfigs').textContent = totalConfigs;
+        document.getElementById('ultimaAtualizacao').textContent = ultimaAtualizacao;
+        document.getElementById('premioAtual').textContent = premioAtual;
+        
+        this.atualizarHistorico();
+      }
+
+      mostrarMensagem(mensagem, tipo) {
+        const msgElement = document.getElementById('mensagem');
+        msgElement.textContent = mensagem;
+        msgElement.className = `alert alert-${tipo === 'success' ? 'success' : 'error'}`;
+        msgElement.style.display = 'block';
+        
+        setTimeout(() => {
+          msgElement.style.display = 'none';
+        }, 4000);
+      }
+    }
+
+    // Inicializar o painel quando a página carregar
+    document.addEventListener('DOMContentLoaded', () => {
+      new RoletaAdmin();
+    });
+  </script>
+</body>
+</html>
