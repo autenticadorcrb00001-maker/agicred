@@ -7,7 +7,6 @@ const path = require("path");
 
 // 2. Configurações iniciais
 const app = express();
-
 // ✅ A porta será fornecida pelo ambiente de produção (Render) ou será 3000 em modo local
 const PORT = process.env.PORT || 3000; 
 
